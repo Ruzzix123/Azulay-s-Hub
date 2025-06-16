@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Azulay's Hub</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+    />
+  </head>
+  <body class="bg-black text-white min-h-screen">
+    <div id="login" class="flex items-center justify-center min-h-screen">
+      <div
+        class="bg-black p-8 rounded shadow-lg w-80 text-center border border-red-600"
+      >
+        <h1
+          class="text-6xl mb-6 font-bold text-red-600 select-none"
+        >
+          AZULAY'S HUB
+        </h1>
+        <div class="relative">
+          <input
+            id="password"
+            type="password"
+            placeholder="Enter password"
+            class="w-full p-3 mb-4 rounded text-black"
+            autofocus
+          />
+          <button
+            type="button"
+            onclick="togglePasswordVisibility()"
+            class="absolute top-3 right-3 text-red-600 font-bold"
+            aria-label="Toggle password visibility"
+          >
+            👁️
+          </button>
+        </div>
+        <button
+          onclick="checkPassword()"
+          class="w-full bg-red-600 py-2 rounded font-semibold hover:bg-red-700 transition"
+        >
+          Enter
+        </button>
+        <p id="error" class="mt-4 text-red-500 hidden">
+          Incorrect password, try again.
+        </p>
+      </div>
+    </div>
+
+    <div id="hub" class="hidden p-6">
+      <h1 class="text-4xl font-bold mb-6 text-red-600">Azulay's Hub</h1>
+      <div class="flex gap-4 mb-6">
+        <input
+          id="search"
+          type="text"
+          placeholder="Search for a movie..."
+          class="text-black px-4 py-2 rounded w-full"
+          oninput="filterMovies()"
+        />
+        <select
+          id="sort"
+          class="text-black px-4 py-2 rounded"
+          onchange="filterMovies()"
+        >
+          <option value="none">Sort By</option>
+          <option value="rating">Rating</option>
+          <option value="year">Year</option>
+        </select>
+      </div>
+      <div
+        id="movies"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+      ></div>
+    </div>
+
+    <script>
+      const movies = [
+        {
+          id: 1,
+          title: "Stranger Things",
+          category: "Sci-Fi",
+          rating: 9,
+          year: 2016,
+          poster:
+            "https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg",
+          video: "https://www.w3schools.com/html/mov_bbb.mp4",
+        },
+        {
+          id: 2,
+          title: "Breaking Bad",
+          category: "Drama",
+          rating: 9.5,
+          year: 2008,
+          poster:
+            "https://image.tmdb.org/t/p/w500/eSzpy96DwBujGFj0xMbXBcGcfxX.jpg",
+          video: "https://www.w3schools.com/html/movie.mp4",
+        },
+        {
+          id: 3,
+          title: "Narcos",
+          category: "Crime",
+          rating: 8.8,
+          year: 2015,
+          poster:
+            "https://image.tmdb.org/t/p/w500/rTmal9fDbwh5F0waol2hq35U4ah.jpg",
+          video: "https://www.w3schools.com/html/mov_bbb.mp4",
+        },
+        {
+          id: 4,
+          title: "The Crown",
+          category: "Drama",
+          rating: 8.7,
+          year: 2016,
+          poster:
+            "https://image.tmdb.org/t/p/w500/ltNQfLkKQvVbYKMMeNsoxR6WAAQ.jpg",
+          video: "https://www.w3schools.com/html/movie.mp4",
+        },
+        {
+          id: 5,
+          title: "Dark",
+          category: "Sci-Fi",
+          rating: 8.9,
+          year: 2017,
+          poster:
+            "https://image.tmdb.org/t/p/w500/apbrbWs8M9lyOpJYU5WXrpFbk1Z.jpg",
+          video: "https://www.w3schools.com/html/mov_bbb.mp4",
+        },
+        {
+          id: 6,
+          title: "Peaky Blinders",
+          category: "Crime",
+          rating: 8.8,
+          year: 2013,
+          poster:
+            "https://image.tmdb.org/t/p/w500/3N0hGvMZz0LOX3sBQH3cE8HyeaT.jpg",
+          video: "https://www.w3schools.com/html/movie.mp4",
+        },
+        {
+          id: 7,
+          title: "The Witcher",
+          category: "Fantasy",
+          rating: 8.2,
+          year: 2019,
+          poster:
+            "https://image.tmdb.org/t/p/w500/7vjaCdMw15FEbXyLQTVa04URsPm.jpg",
+          video: "https://www.w3schools.com/html/mov_bbb.mp4",
+        },
+        {
+          id: 8,
+          title: "Outer Banks",
+          category: "Adventure",
+          rating: 7.6,
+          year: 2020,
+          poster:
+            "https://image.tmdb.org/t/p/w500/9ByTFE9B2Xmg4zC9Ypl5dY2ML1J.jpg",
+          video: "https://www.w3schools.com/html/movie.mp4",
+        },
+      ];
+
+      function togglePasswordVisibility() {
+        const pwInput = document.getElementById("password");
+        if (pwInput.type === "password") {
+          pwInput.type = "text";
+        } else {
+          pwInput.type = "password";
+        }
+      }
+
+      function checkPassword() {
+        const pw = document.getElementById("password").value.trim();
+        const errorEl = document.getElementById("error");
+        if (pw === "noam3004") {
+          errorEl.classList.add("hidden");
+          document.getElementById("login").classList.add("hidden");
+          document.getElementById("hub").classList.remove("hidden");
+          renderMovies(movies);
+        } else {
+          errorEl.classList.remove("hidden");
+        }
+      }
+
+      function renderMovies(filtered) {
+        const container = document.getElementById("movies");
+        container.innerHTML = "";
+        filtered.forEach((movie) => {
+          const card = document.createElement("div");
+          card.className = "bg-black border border-red-600 rounded overflow-hidden";
+          card.innerHTML = `
+            <img src="${movie.poster}" class="w-full h-64 object-cover" alt="${movie.title}" />
+            <div class="p-4">
+              <h2 class="text-xl font-semibold text-white flex justify-between">
+                ${movie.title}
+                <span class="text-red-400">⭐ ${movie.rating}</span>
+              </h2>
+              <p class="text-sm text-red-300">${movie.category} • ${movie.year}</p>
+              <video controls class="w-full mt-2 rounded">
+                <source src="${movie.video}" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      function filterMovies() {
+        const search = document.getElementById("search").value.toLowerCase();
+        const sort = document.getElementById("sort").value;
+
+        let filtered = movies.filter((movie) =>
+          movie.title.toLowerCase().includes(search)
+        );
+
+        if (sort === "rating") filtered.sort((a, b) => b.rating - a.rating);
+        if (sort === "year") filtered.sort((a, b) => b.year - a.year);
+
+        renderMovies(filtered);
+      }
+    </script>
+  </body>
+</html>
